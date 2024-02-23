@@ -1,16 +1,4 @@
-export type UserInfo = {
-	name: {
-		title: string;
-		first: string;
-		last: string;
-	};
-	email: string;
-	picture: {
-		large: string;
-		medium: string;
-		thumbnail: string;
-	};
-};
+import type { UserInfo } from "../utils/types";
 
 function UserCard({ user }: { user: UserInfo }) {
 	const fullName = `${user.name.first} ${user.name.last}`;
@@ -18,7 +6,7 @@ function UserCard({ user }: { user: UserInfo }) {
 		<article className="flex items-center gap-4 rounded-md border border-black p-4">
 			<img
 				className="h-16 w-16 rounded-full"
-				src={user.picture.medium}
+				src={user.imageUrl}
 				alt={`Profile photo of ${fullName}`}
 			/>
 			<div className="flex flex-col gap-2">

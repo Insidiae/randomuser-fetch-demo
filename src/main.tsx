@@ -8,9 +8,10 @@ import {
 
 import UsersRoute from "./routes/users";
 import UsersIndexRoute from "./routes/users._index";
+import UserInfoRoute from "./routes/users.$userId";
+import { loader as getUserLoader } from "./routes/api/getUser";
 
 import "./index.css";
-import UserInfoRoute from "./routes/users.$userId";
 
 const router = createBrowserRouter([
 	{
@@ -25,13 +26,18 @@ const router = createBrowserRouter([
 			{
 				index: true,
 				element: <UsersIndexRoute />,
-				loader: UsersIndexRoute.loader,
+				action: UsersIndexRoute.action,
 			},
 			{
 				path: ":userId",
 				element: <UserInfoRoute />,
+				loader: UserInfoRoute.loader,
 			},
 		],
+	},
+	{
+		path: "/api/getUser",
+		loader: getUserLoader,
 	},
 ]);
 

@@ -1,71 +1,96 @@
-import { useLoaderData, json } from "react-router-dom";
+import React from "react";
+import {
+	Form,
+	useFetcher,
+	redirect,
+	type ActionFunctionArgs,
+} from "react-router-dom";
+
 import UserCard from "../components/UserCard";
+import UserCardSkeleton from "../components/UserCardSkeleton";
 import Button from "../components/Button";
+import { UserWithId } from "../utils/types";
 
-async function loader() {
-	const { name, email, picture, login } = fakeResult;
+async function action({ request }: ActionFunctionArgs) {
+	const rawUsers = window.localStorage.getItem("savedUsers") ?? "[]";
+	const existingUsers = JSON.parse(rawUsers);
 
-	return json({ id: login.uuid, name, email, picture });
+	const formData = await request.formData();
+
+	const id = formData.get("id");
+	const first = formData.get("firstName");
+	const last = formData.get("lastName");
+	const email = formData.get("email");
+	const imageUrl = formData.get("imageUrl");
+
+	const newUser = { id, name: { first, last }, email, imageUrl };
+
+	window.localStorage.setItem(
+		"savedUsers",
+		JSON.stringify([...existingUsers, newUser]),
+	);
+
+	return redirect(`/users/${id}`);
 }
 
 function UsersIndexRoute() {
-	const data = useLoaderData() as FakeUser;
+	const fetcher = useFetcher<UserWithId>({ key: "get-user" });
+
+	const isLoading = fetcher.state === "loading";
+
+	React.useEffect(() => {
+		if (fetcher.state === "idle" && !fetcher.data) {
+			fetcher.load("/api/getUser");
+		}
+	}, [fetcher]);
 
 	return (
 		<div className="flex h-full flex-col gap-8 rounded-md bg-white p-8">
 			<h2 className="text-3xl font-bold">New User</h2>
 
-			<UserCard user={data} />
+			{!isLoading && fetcher.data ? (
+				<>
+					<UserCard user={fetcher.data} />
+					<Form id="new-user" method="POST" className="hidden">
+						<input type="hidden" name="id" value={fetcher.data.id} />
+						<input
+							type="hidden"
+							name="firstName"
+							value={fetcher.data.name.first}
+						/>
+						<input
+							type="hidden"
+							name="lastName"
+							value={fetcher.data.name.last}
+						/>
+						<input type="hidden" name="email" value={fetcher.data.email} />
+						<input
+							type="hidden"
+							name="imageUrl"
+							value={fetcher.data.imageUrl}
+						/>
+					</Form>
+				</>
+			) : (
+				<UserCardSkeleton />
+			)}
 
 			<div className="flex justify-center gap-2">
-				<Button>Refresh</Button>
-				<Button>Save</Button>
+				<Button
+					type="button"
+					onClick={() => fetcher.load("/api/getUser")}
+					disabled={isLoading}
+				>
+					Refresh
+				</Button>
+				<Button type="submit" form="new-user" disabled={isLoading}>
+					Save
+				</Button>
 			</div>
 		</div>
 	);
 }
 
+UsersIndexRoute.action = action;
+
 export default UsersIndexRoute;
-
-UsersIndexRoute.loader = loader;
-
-// TODO: Replace with actual RandomUser API data
-const fakeResult = {
-	gender: "female",
-	name: { title: "Ms", first: "Lilli", last: "Stave" },
-	location: {
-		street: { number: 4595, name: "Disengrenda" },
-		city: "Øksfjord",
-		state: "Vestfold",
-		country: "Norway",
-		postcode: "6530",
-		coordinates: { latitude: "45.9696", longitude: "62.2380" },
-		timezone: { offset: "-9:00", description: "Alaska" },
-	},
-	email: "lilli.stave@example.com",
-	login: {
-		uuid: "8cc172ff-6ca9-4569-a05a-7aaa771fe15b",
-		username: "purpleladybug690",
-		password: "duncan",
-		salt: "WMJvzLid",
-		md5: "66c8d3a6b3b17bb94aecc763fb41ddfc",
-		sha1: "1a6fe6b9b0edaa2de39b51c647b6f1c8a68d35ee",
-		sha256: "a036963004158b5f7ceef60b69fa8728df2489996a5dcc8a8e221765ed9e82d5",
-	},
-	dob: { date: "1981-08-20T17:14:02.555Z", age: 42 },
-	registered: { date: "2016-01-29T15:17:47.350Z", age: 8 },
-	phone: "51990378",
-	cell: "45951782",
-	id: { name: "FN", value: "20088108648" },
-	picture: {
-		large: "https://randomuser.me/api/portraits/women/46.jpg",
-		medium: "https://randomuser.me/api/portraits/med/women/46.jpg",
-		thumbnail: "https://randomuser.me/api/portraits/thumb/women/46.jpg",
-	},
-	nat: "NO",
-};
-
-type FakeUser = { id: string } & Pick<
-	typeof fakeResult,
-	"name" | "email" | "picture"
->;
