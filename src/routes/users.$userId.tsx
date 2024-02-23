@@ -21,6 +21,10 @@ async function loader({ params }: LoaderFunctionArgs) {
 	const users = JSON.parse(rawUsers) as UserWithId[];
 	const user = users.find((u) => u.id === userId);
 
+	if (!user) {
+		throw new Response("User not found", { status: 404 });
+	}
+
 	return json(user);
 }
 

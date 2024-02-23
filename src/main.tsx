@@ -11,6 +11,7 @@ import UsersIndexRoute from "./routes/users._index";
 import UserInfoRoute from "./routes/users.$userId";
 import UserInfoEditRoute from "./routes/users.$userId.edit";
 import { loader as getUserLoader } from "./routes/api/getUser";
+import { GeneralErrorBoundary } from "./components/ErrorBoundary";
 
 import "./index.css";
 
@@ -23,23 +24,47 @@ const router = createBrowserRouter([
 		path: "/users",
 		element: <UsersRoute />,
 		loader: UsersRoute.loader,
+		errorElement: (
+			<div className="h-screen w-screen">
+				<GeneralErrorBoundary />
+			</div>
+		),
 		children: [
 			{
 				index: true,
 				element: <UsersIndexRoute />,
 				action: UsersIndexRoute.action,
+				errorElement: <GeneralErrorBoundary />,
 			},
 			{
 				path: ":userId",
 				element: <UserInfoRoute />,
 				loader: UserInfoRoute.loader,
 				action: UserInfoRoute.action,
+				errorElement: (
+					<GeneralErrorBoundary
+						statusHandlers={{
+							404: ({ params }) => (
+								<p>No user with the id "{params.userId}" exists</p>
+							),
+						}}
+					/>
+				),
 			},
 			{
 				path: ":userId/edit",
 				element: <UserInfoEditRoute />,
 				loader: UserInfoEditRoute.loader,
 				action: UserInfoEditRoute.action,
+				errorElement: (
+					<GeneralErrorBoundary
+						statusHandlers={{
+							404: ({ params }) => (
+								<p>No user with the id "{params.userId}" exists</p>
+							),
+						}}
+					/>
+				),
 			},
 		],
 	},
