@@ -164,7 +164,7 @@ function UserInfoEditRoute() {
 			)}
 
 			<div className="flex justify-center gap-2">
-				<Button type="submit" form="edit-user">
+				<Button variant="success" type="submit" form="edit-user">
 					Submit
 				</Button>
 				<Link

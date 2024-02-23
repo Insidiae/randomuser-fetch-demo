@@ -62,7 +62,9 @@ function UserInfoRoute() {
 					Edit
 				</Link>
 				<Form method="POST">
-					<Button type="submit">Delete</Button>
+					<Button variant="danger" type="submit">
+						Delete
+					</Button>
 				</Form>
 			</div>
 		</div>

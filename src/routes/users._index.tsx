@@ -83,7 +83,12 @@ function UsersIndexRoute() {
 				>
 					Refresh
 				</Button>
-				<Button type="submit" form="new-user" disabled={isLoading}>
+				<Button
+					variant="success"
+					type="submit"
+					form="new-user"
+					disabled={isLoading}
+				>
 					Save
 				</Button>
 			</div>
