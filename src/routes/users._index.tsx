@@ -1,4 +1,6 @@
 import { useLoaderData, json } from "react-router-dom";
+import UserCard from "../components/UserCard";
+import Button from "../components/Button";
 
 async function loader() {
 	const { name, email, picture, login } = fakeResult;
@@ -6,33 +8,26 @@ async function loader() {
 	return json({ id: login.uuid, name, email, picture });
 }
 
-function RootRoute() {
+function UsersIndexRoute() {
 	const data = useLoaderData() as FakeUser;
 
-	const fullName = `${data.name.first} ${data.name.last}`;
-
 	return (
-		<main className="mx-auto flex max-w-lg flex-col gap-8 p-8">
-			<h1 className="text-3xl font-bold">Random Users</h1>
+		<div className="flex h-full flex-col gap-8 rounded-md bg-white p-8">
+			<h2 className="text-3xl font-bold">New User</h2>
 
-			<article className="flex items-center gap-4 rounded-md border border-black p-4">
-				<img
-					className="h-16 w-16 rounded-full"
-					src={data.picture.medium}
-					alt={`Profile photo of ${fullName}`}
-				/>
-				<div className="flex flex-col gap-2">
-					<h2 className="text-xl font-bold">{fullName}</h2>
-					<p>{data.email}</p>
-				</div>
-			</article>
-		</main>
+			<UserCard user={data} />
+
+			<div className="flex justify-center gap-2">
+				<Button>Refresh</Button>
+				<Button>Save</Button>
+			</div>
+		</div>
 	);
 }
 
-RootRoute.loader = loader;
+export default UsersIndexRoute;
 
-export default RootRoute;
+UsersIndexRoute.loader = loader;
 
 // TODO: Replace with actual RandomUser API data
 const fakeResult = {
