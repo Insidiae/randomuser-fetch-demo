@@ -17,7 +17,7 @@ function UsersRoute() {
 
 	return (
 		<main className="flex min-h-screen w-screen flex-col-reverse gap-8 lg:flex-row">
-			<section className="flex flex-[1] flex-col gap-8 overflow-y-auto p-8 lg:max-h-screen lg:basis-[200px]">
+			<section className="flex flex-[1] flex-col gap-8 overflow-y-auto p-4 sm:p-8 lg:max-h-screen lg:basis-[200px]">
 				<h1 className="text-3xl font-bold">Random Users</h1>
 
 				{hasSavedUsers ? (
@@ -32,7 +32,7 @@ function UsersRoute() {
 					</p>
 				)}
 			</section>
-			<section className="flex-[3] bg-slate-300 p-8">
+			<section className="flex-[3] bg-slate-300 p-4 sm:p-8">
 				<Outlet />
 			</section>
 		</main>

@@ -9,6 +9,7 @@ import {
 import UsersRoute from "./routes/users";
 import UsersIndexRoute from "./routes/users._index";
 import UserInfoRoute from "./routes/users.$userId";
+import UserInfoEditRoute from "./routes/users.$userId.edit";
 import { loader as getUserLoader } from "./routes/api/getUser";
 
 import "./index.css";
@@ -32,6 +33,13 @@ const router = createBrowserRouter([
 				path: ":userId",
 				element: <UserInfoRoute />,
 				loader: UserInfoRoute.loader,
+				action: UserInfoRoute.action,
+			},
+			{
+				path: ":userId/edit",
+				element: <UserInfoEditRoute />,
+				loader: UserInfoEditRoute.loader,
+				action: UserInfoEditRoute.action,
 			},
 		],
 	},

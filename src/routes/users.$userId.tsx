@@ -1,8 +1,12 @@
 import {
 	json,
+	redirect,
 	Link,
 	useLoaderData,
+	useParams,
 	type LoaderFunctionArgs,
+	type ActionFunctionArgs,
+	Form,
 } from "react-router-dom";
 
 import Button from "../components/Button";
@@ -20,8 +24,23 @@ async function loader({ params }: LoaderFunctionArgs) {
 	return json(user);
 }
 
+async function action({ params }: ActionFunctionArgs) {
+	const userId = params.userId;
+
+	const rawUsers = window.localStorage.getItem("savedUsers") ?? "[]";
+	const users = JSON.parse(rawUsers) as UserWithId[];
+
+	window.localStorage.setItem(
+		"savedUsers",
+		JSON.stringify(users.filter((u) => u.id !== userId)),
+	);
+
+	return redirect("/users");
+}
+
 function UserInfoRoute() {
 	const data = useLoaderData() as UserWithId;
+	const params = useParams();
 
 	return (
 		<div className="flex h-full flex-col gap-8 rounded-md bg-white p-8">
@@ -32,13 +51,21 @@ function UserInfoRoute() {
 			{data ? <UserCard user={data} /> : <UserCardSkeleton />}
 
 			<div className="flex justify-center gap-2">
-				<Button>Edit</Button>
-				<Button>Delete</Button>
+				<Link
+					to={`/users/${params.userId}/edit`}
+					className="flex items-center justify-center gap-2 rounded-full bg-blue-600 px-4 py-2 text-center text-white disabled:bg-blue-400"
+				>
+					Edit
+				</Link>
+				<Form method="POST">
+					<Button type="submit">Delete</Button>
+				</Form>
 			</div>
 		</div>
 	);
 }
 
 UserInfoRoute.loader = loader;
+UserInfoRoute.action = action;
 
 export default UserInfoRoute;
